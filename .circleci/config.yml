@@ -1,22 +1,21 @@
-version: 2
+version: 2.1
+
+orbs:
+  python: circleci/python@0.2.1
+
 jobs:
-  build:
-    working_directory: ~/solid-math-computing-machine         # my repo
-
-    docker:
-      - image: circleci/python:3.7    # primary container for the build job
-
+  build-and-test:
+    executor: python/default
     steps:
-      - checkout # Checkout the repo
-      - run:  # Create virtual env and install dependencies
-          name: Install dependencies
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install --upgrade pip
-            pip install -r requirements.txt
-      - run: # Execute the test cases
-          name: Run test
-          command: |
-            . venv/bin/activate
-            pytest -v --cov=calculator
+      - checkout
+      - python/load-cache
+      - python/install-deps
+      - python/save-cache
+      - run:
+          command: ./manage.py test
+          name: Test
+
+workflows:
+  main:
+    jobs:
+      - build-and-test
