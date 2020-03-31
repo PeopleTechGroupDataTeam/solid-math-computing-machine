@@ -1,0 +1,21 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/repo         # my repo
+
+    docker:
+      - image: circleci/python:3.7    # primary container for the build job
+
+    steps:
+      - checkout # Checkout the repo
+      - run:  # Create virtual env and install dependencies
+          name: Install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirememts.txt
+      - run: # Execute the test cases
+          name: Run test
+          command: |
+            . venv/bin/activate
+            pytest -v --cov=calculator
